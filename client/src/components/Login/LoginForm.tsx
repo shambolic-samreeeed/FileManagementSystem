@@ -1,13 +1,11 @@
 import { useFormik } from "formik";
 import { loginSchema } from "../../utils/validationSchemas";
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../services/authenticationService";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'; 
 
 const LoginForm = () => {
-  const [error, setError] = useState('');
   const nav = useNavigate();
 
   const notify = () => toast.success('Login successful!', {
@@ -15,31 +13,28 @@ const LoginForm = () => {
     autoClose: 3000,
     pauseOnHover: true,
   });
-
+  
   const formik = useFormik({
-    initialValues: { email: "", password: "" },
+    initialValues:{email:"", password:""},
     validationSchema: loginSchema,
     onSubmit: async (values) => {
-      try {
-        console.log("Submitting login with:", values);
-        setError("");
+      try{
         await login(values.email, values.password);
-        notify(); 
-        nav('/home');
-      } catch (err: any) {
-        console.log("Login error:", err?.response?.data);
-        setError("Login failed. Please check your inputs.");
-        toast.error("Login failed. Please check your credentials.", {
-    position: "top-right",
-    autoClose: 3000,
-    pauseOnHover: true,
-  });
+        notify();
+        nav('/home')
+      }catch{
+        toast.error('Login Failed, Please check your credentials.',{
+          position: "top-right",
+          autoClose:3000,
+          pauseOnHover:true
+        })
       }
-    },
-  });
+    }
+  })
+
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-md lg:max-w-[500px] m-auto mt-10 text-center py-10 bg-gray-200 p-10" >
+    <div className=" w-full max-w-sm sm:max-w-md md:max-w-md lg:max-w-[500px] m-auto mt-10 text-center py-10 border-1 rounded-3xl p-10 bg-white " >
       <ToastContainer /> 
       <h1 className="text-2xl font-bold mb-6">Welcome Back</h1>
 
@@ -62,7 +57,7 @@ const LoginForm = () => {
         {/* Password */}
         <div>
           <label className="block mb-1">Password</label>
-          <input
+          <input 
             name="password"
             type="password"
             onChange={formik.handleChange}

@@ -24,7 +24,7 @@ const RegisterForm = () => {
   });
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-md lg:max-w-[500px] m-auto mt-10 text-center py-10 bg-gray-200 p-10">
+    <div className="w-full max-w-sm sm:max-w-md md:max-w-md lg:max-w-[500px] m-auto mt-10 text-center py-10 border-1 rounded-3xl p-10">
       <h1 className="text-2xl font-bold mb-6">Register as a new member</h1>
 
       {error && <p className="text-red-500 text-sm mb-4">{error}</p>}

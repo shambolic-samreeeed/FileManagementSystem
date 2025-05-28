@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom"
+import NavigationCards from "../components/Home/NavigationCards"
+import NavBar from "../components/NavBar/NavBar"
 
 const Home = () => {
   return (
     <div>
-
-      <Link to={'/login'}>Login</Link>
-      <Link to={'/register'}>Register</Link>
+      <NavBar/>
+      <NavigationCards/>
     </div>
   )
 }

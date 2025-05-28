@@ -2,7 +2,7 @@ import LoginForm from "../components/Login/LoginForm"
 
 const Login = () => {
   return (
-    <div>
+    <div className="mt-30"  >
       <LoginForm/>
     </div>
   )

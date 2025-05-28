@@ -18,6 +18,7 @@ export const login = async (email: string, password: string) =>{
 
   if(response.data.success && response.data.data.token){
     localStorage.setItem('token', response.data.data.token);
+    localStorage.setItem('email', response.data.data.user.email)
   }
   return response.data;
 }

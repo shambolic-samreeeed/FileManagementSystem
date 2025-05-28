@@ -1,6 +1,5 @@
-import { IoIosSettings } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
 
@@ -8,71 +7,94 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const nav = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [email, setEmail] = useState(null); // Store email here
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    setLoggedIn(false);
+    setEmail(null);
     nav("/login");
   };
 
-  const isLoggedIn = () => {
-    const loggedIn = localStorage.getItem("token");
-    if (loggedIn) {
+  const checkLoggedIn = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
       setLoggedIn(true);
+    } else {
+      setLoggedIn(false);
+    }
+  };
+
+  const fetchEmailFromStorage = () => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
     }
   };
 
   useEffect(() => {
-    isLoggedIn();
-  }, [isLoggedIn]);
+    checkLoggedIn();
+    fetchEmailFromStorage();
+  }, []); // Run once on mount
 
   return (
     <div>
       <div className="bg-white h-15 flex justify-between items-center px-10 drop-shadow-md">
         {/* logo container */}
-        <div className="">
+        <div>
           <p className="text-2xl font-bold">File Manager</p>
         </div>
 
-        {/* logo-right container */}
+        {/* right side */}
         <div className="flex gap-5 items-center">
-          <IoIosSettings className="size-10 hover:bg-gray-200 rounded-[50%]" />
           {loggedIn ? (
             <div className="w-10 h-10 cursor-pointer">
+              {/* Use /boy.png if in public folder */}
               <img
-                src="./public/boy.png"
+                src="/boy.png"
+                alt="profile"
                 onClick={() => setIsOpen(!isOpen)}
-              ></img>
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
           ) : (
             <CgProfile
-              className="size-10 hover:bg-gray-200 p-1 rounded-[50%]"
+              className="size-10 hover:bg-gray-200 p-1 rounded-full cursor-pointer"
               onClick={() => setIsOpen(!isOpen)}
             />
           )}
         </div>
 
         {/* dropdown menu */}
-
         {isOpen && (
-          <div className="absolute right-10 top-12 bg-gray-100 mt-2 ">
-            <ul className="bg-gray-100">
-              <div className="flex items-center hover:bg-gray-300 cursor-pointer" onClick={()=>nav('/profile')}>
-                <div>
-                  <CgProfile className="size-8 p-1 rounded-[50%]" />
-                </div>
-                <div>
-                  <li className=" pl-2 pr-20 py-2">Profile</li>
-                </div>
-              </div>
-              <div className="flex hover:bg-gray-300 items-center gap-2 cursor-pointer" onClick={handleLogout}>
+          <div className="absolute right-10 top-12 bg-gray-100 mt-2 rounded shadow-lg z-10">
+            <ul className="bg-gray-100 min-w-[150px]">
+              <li
+                className="pl-2 pr-20 py-2 cursor-default select-none text-gray-700"
+                // Just display email, no click handler
+              >
+                {email || "No email"}
+              </li>
+
+              <li
+                className="flex items-center pl-2 pr-20 py-2 hover:bg-gray-300 cursor-pointer"
+                onClick={() => {
+                  setIsOpen(false);
+                  nav("/profile");
+                }}
+              >
+                <CgProfile className="size-8 p-1 rounded-full mr-2" />
+                Profile
+              </li>
+
+              <li
+                className="flex items-center gap-2 pl-2 py-2 text-red-600 hover:bg-gray-300 cursor-pointer"
+                onClick={handleLogout}
+              >
                 <CiLogout className="size-6" />
-                <li
-                  className="hover:bg-gray-300 pl-2 py-2 text-red-600"
-                  
-                >
-                  Logout
-                </li>
-              </div>
+                Logout
+              </li>
             </ul>
           </div>
         )}

@@ -1,4 +1,4 @@
-import DisplayFiles from "../Files/DisplayFiles"
+import DisplayFiles from "../Files/DisplayFilesCard"
 import UploadForm from "../Files/UploadForm"
 
 const NavigationCards = () => {

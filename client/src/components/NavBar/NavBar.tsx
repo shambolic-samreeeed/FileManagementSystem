@@ -43,7 +43,7 @@ const NavBar = () => {
       <div className="bg-white h-15 flex justify-between items-center px-10 drop-shadow-md">
         {/* logo container */}
         <div>
-          <p className="text-2xl font-bold">File Manager</p>
+          <p className="text-2xl font-bold cursor-pointer" onClick={()=> nav('/home')}>File Manager</p>
         </div>
 
         {/* right side */}

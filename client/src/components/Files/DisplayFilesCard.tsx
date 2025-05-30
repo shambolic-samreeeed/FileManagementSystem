@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { fetchAnalyticsSummary } from "../../services/fileUploadService";
+import { useNavigate } from "react-router-dom";
 
 const DisplayFiles = () => {
   const [totalFiles, setTotalFiles] = useState('0');
   const [totalStorage, setTotalStorage] = useState('0')
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const nav = useNavigate();
 
   useEffect(() => {
     const loadSummary = async () => {
@@ -38,7 +40,7 @@ const DisplayFiles = () => {
         </div>
 
         {/* Upload Button */}
-        <button className="h-10 w-36 bg-blue-800 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+        <button className="h-10 w-36 bg-blue-800 text-white font-semibold rounded-lg hover:bg-blue-700 transition" onClick={()=>nav('/files')}>
           View Files
         </button>
       </div>

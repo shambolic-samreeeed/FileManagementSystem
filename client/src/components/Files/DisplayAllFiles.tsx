@@ -18,10 +18,14 @@ const DisplayAllFiles = () => {
     const getFiles = async () => {
       try {
         const response = await fetchFiles();
+        console.log("API response:", response);
 
-        // Ensure response is always an array
         if (Array.isArray(response)) {
-          setFiles(response);
+          const sortedFiles = response.sort(
+            (a, b) =>
+              new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+          );
+          setFiles(sortedFiles);
         } else {
           console.error("Unexpected response:", response);
           setError("Failed to load files. Try again later.");
@@ -37,12 +41,23 @@ const DisplayAllFiles = () => {
     getFiles();
   }, []);
 
+  const isImage = (mimeType: string) => mimeType.startsWith("image/");
+
+  const handleFileClick = (file: FileItem) => {
+    if (file.path) {
+      const fileUrl = `http://localhost:5000/${file.path.replace(/\\/g, "/")}`;
+      window.open(fileUrl, "_blank");
+    } else {
+      alert("File path is missing. Cannot open file.");
+    }
+  };
+
   if (loading) return <p className="text-center mt-10">🔄 Loading files...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-6"> Your Uploaded Files</h2>
+      <h2 className="text-2xl font-semibold mb-6">Recent Uploads</h2>
       {files.length === 0 ? (
         <p>No files found.</p>
       ) : (
@@ -50,30 +65,22 @@ const DisplayAllFiles = () => {
           {files.map((file, index) => (
             <li
               key={index}
-              className="bg-white shadow p-4 rounded border border-gray-200"
+              onClick={() => handleFileClick(file)}
+              className="bg-white shadow p-4 rounded border hover:shadow-2xl cursor-pointer transition border-gray-200"
+              title="Click to open file in new tab"
             >
               <p>
-                <strong> Name:</strong> {file.fileName}
+                <strong>Name:</strong> {file.fileName}
               </p>
               <p>
-                <strong> Type:</strong> {file.mimeType}
+                <strong>Type:</strong> {file.mimeType}
               </p>
               <p>
-                <strong> Size:</strong> {(file.size / (1024 * 1024)).toFixed(2)}{" "}
-                MB
+                <strong>Size:</strong> {(file.size / (1024 * 1024)).toFixed(2)} MB
               </p>
               <p>
-                <strong> Uploaded:</strong>{" "}
-                {new Date(file.uploadDate).toLocaleString()}
+                <strong>Uploaded:</strong> {new Date(file.uploadDate).toLocaleString()}
               </p>
-              <a
-                href={file.path}
-                target="_blank"
-                rel="noreferrer"
-                className="bg-blue-800 py-1 text-white rounded-sm px-4"
-              >
-                 Open File
-              </a>
             </li>
           ))}
         </ul>

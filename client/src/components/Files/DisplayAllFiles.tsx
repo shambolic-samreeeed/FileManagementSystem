@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaFileImage } from "react-icons/fa6";
 import { fetchFiles } from "../../services/fileUploadService";
 
 interface FileItem {
@@ -17,18 +18,14 @@ const DisplayAllFiles = () => {
   useEffect(() => {
     const getFiles = async () => {
       try {
-        const response = await fetchFiles();
-        console.log("API response:", response);
+        const fileResponse = await fetchFiles();
 
-        if (Array.isArray(response)) {
-          const sortedFiles = response.sort(
+        if (Array.isArray(fileResponse)) {
+          const sortedFiles = fileResponse.sort(
             (a, b) =>
               new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
           );
           setFiles(sortedFiles);
-        } else {
-          console.error("Unexpected response:", response);
-          setError("Failed to load files. Try again later.");
         }
       } catch (err) {
         console.error("Error fetching files:", err);
@@ -52,12 +49,12 @@ const DisplayAllFiles = () => {
     }
   };
 
-  if (loading) return <p className="text-center mt-10">🔄 Loading files...</p>;
+  if (loading) return <p className="text-center mt-10">🔄 Loading...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-6">Recent Uploads</h2>
+      <h2 className="text-2xl font-semibold mb-6">📄 Recent Uploads</h2>
       {files.length === 0 ? (
         <p>No files found.</p>
       ) : (
@@ -69,17 +66,24 @@ const DisplayAllFiles = () => {
               className="bg-white shadow p-4 rounded border hover:shadow-2xl cursor-pointer transition border-gray-200"
               title="Click to open file in new tab"
             >
-              <p>
-                <strong>Name:</strong> {file.fileName}
-              </p>
+              <div className="flex items-center gap-2 mb-2">
+                {isImage(file.mimeType) ? (
+                  <FaFileImage className="text-blue-500" />
+                ) : (
+                  <FaFileImage className="text-gray-400" />
+                )}
+                <span className="font-semibold">{file.fileName}</span>
+              </div>
               <p>
                 <strong>Type:</strong> {file.mimeType}
               </p>
               <p>
-                <strong>Size:</strong> {(file.size / (1024 * 1024)).toFixed(2)} MB
+                <strong>Size:</strong>{" "}
+                {(file.size / (1024 * 1024)).toFixed(2)} MB
               </p>
               <p>
-                <strong>Uploaded:</strong> {new Date(file.uploadDate).toLocaleString()}
+                <strong>Uploaded:</strong>{" "}
+                {new Date(file.uploadDate).toLocaleString()}
               </p>
             </li>
           ))}

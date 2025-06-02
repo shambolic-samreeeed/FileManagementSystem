@@ -1,8 +1,9 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-// Upload a file
+
 export const uploadFile = async (file: File, folderId?: string) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -10,7 +11,7 @@ export const uploadFile = async (file: File, folderId?: string) => {
     formData.append("folder", folderId);
   }
 
-  const token = localStorage.getItem("token");
+  const token = Cookies.get("token");
 
   const response = await axios.post(`${BASE_URL}/file/upload`, formData, {
     headers: {
@@ -22,9 +23,8 @@ export const uploadFile = async (file: File, folderId?: string) => {
   return response.data;
 };
 
-// Fetch analytics summary
 export const fetchAnalyticsSummary = async () => {
-  const token = localStorage.getItem("token");
+  const token = Cookies.get("token");
 
   const response = await axios.get(`${BASE_URL}/analytics/summary`, {
     headers: {
@@ -36,7 +36,7 @@ export const fetchAnalyticsSummary = async () => {
 };
 
 export const fetchFiles = async () => {
-  const token = localStorage.getItem("token");
+  const token = Cookies.get("token");
 
   const response = await axios.get(`${BASE_URL}/file/list`, {
     headers: {

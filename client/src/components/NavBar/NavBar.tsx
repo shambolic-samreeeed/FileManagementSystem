@@ -2,41 +2,33 @@ import { CgProfile } from "react-icons/cg";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
+import Cookies from 'js-cookie';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const nav = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState(null); // Store email here
+  const [email, setEmail] = useState(''); 
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
+    Cookies.remove("token");
+    Cookies.remove("email");
     setLoggedIn(false);
-    setEmail(null);
+    setEmail('');
     nav("/login");
   };
 
-  const checkLoggedIn = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setLoggedIn(true);
-    } else {
-      setLoggedIn(false);
-    }
-  };
-
-  const fetchEmailFromStorage = () => {
-    const storedEmail = localStorage.getItem("email");
-    if (storedEmail) {
+ const fetchEmailFromCookies = () =>{
+    const storedEmail = Cookies.get('email');
+    if (storedEmail){
       setEmail(storedEmail);
+      setLoggedIn(true);
     }
-  };
+ }
 
-  useEffect(() => {
-    checkLoggedIn();
-    fetchEmailFromStorage();
-  }, []); // Run once on mount
+ useEffect(()=>{
+  fetchEmailFromCookies();
+ },[])
 
   return (
     <div>
@@ -72,7 +64,7 @@ const NavBar = () => {
             <ul className="bg-gray-100 min-w-[150px]">
               <li
                 className="pl-2 pr-20 py-2 cursor-default select-none text-gray-700"
-                // Just display email, no click handler
+               
               >
                 {email || "No email"}
               </li>

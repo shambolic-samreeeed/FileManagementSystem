@@ -24,5 +24,5 @@ export const fetchFolders = async () =>{
         },
     });
 
-    return response.data.folders ?? [];
+    return response.data.data ?? [];
 };

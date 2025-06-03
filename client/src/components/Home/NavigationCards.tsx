@@ -4,8 +4,8 @@ import UploadForm from "../Files/UploadForm"
 
 const NavigationCards = () => {
   return (
-    <div className="p-4 max-w-5xl mx-auto">
-      <div className="flex flex-col gap-10">
+    <div className=" max-w-5xl mx-auto">
+      <div className="flex flex-col">
         <UploadForm />
         <DisplayFiles />
         <CreateFolder />

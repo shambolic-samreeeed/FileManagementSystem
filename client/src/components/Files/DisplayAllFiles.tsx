@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaFileImage } from "react-icons/fa6";
+import Cookies from "js-cookie";
 import { fetchFiles } from "../../services/fileUploadService";
 
 interface FileItem {
@@ -14,6 +15,7 @@ const DisplayAllFiles = () => {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
 
   useEffect(() => {
     const getFiles = async () => {
@@ -38,14 +40,43 @@ const DisplayAllFiles = () => {
     getFiles();
   }, []);
 
+  // Clean up object URL on unmount or when previewImageUrl changes
+  useEffect(() => {
+    return () => {
+      if (previewImageUrl) {
+        URL.revokeObjectURL(previewImageUrl);
+      }
+    };
+  }, [previewImageUrl]);
+
   const isImage = (mimeType: string) => mimeType.startsWith("image/");
 
-  const handleFileClick = (file: FileItem) => {
-    if (file.path) {
-      const fileUrl = `http://localhost:5000/${file.path.replace(/\\/g, "/")}`;
-      window.open(fileUrl, "_blank");
+  const handleFileClick = async (file: FileItem) => {
+    if (isImage(file.mimeType)) {
+      try {
+        const token = Cookies.get("token");
+        const url = `http://localhost:5000/file/download/name/${encodeURIComponent(
+          file.fileName
+        )}`;
+
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch image");
+        }
+
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        setPreviewImageUrl(imageUrl);
+      } catch (err: any) {
+        alert("Cannot preview image: " + err.message);
+      }
     } else {
-      alert("File path is missing. Cannot open file.");
+      alert("Preview not available for this file type.");
     }
   };
 
@@ -64,7 +95,7 @@ const DisplayAllFiles = () => {
               key={index}
               onClick={() => handleFileClick(file)}
               className="bg-white shadow p-4 rounded border hover:shadow-2xl cursor-pointer transition border-gray-200"
-              title="Click to open file in new tab"
+              title="Click to open file preview"
             >
               <div className="flex items-center gap-2 mb-2">
                 {isImage(file.mimeType) ? (
@@ -78,16 +109,34 @@ const DisplayAllFiles = () => {
                 <strong>Type:</strong> {file.mimeType}
               </p>
               <p>
-                <strong>Size:</strong>{" "}
-                {(file.size / (1024 * 1024)).toFixed(2)} MB
+                <strong>Size:</strong> {(file.size / (1024 * 1024)).toFixed(2)} MB
               </p>
               <p>
-                <strong>Uploaded:</strong>{" "}
-                {new Date(file.uploadDate).toLocaleString()}
+                <strong>Uploaded:</strong> {new Date(file.uploadDate).toLocaleString()}
               </p>
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Image preview modal */}
+      {previewImageUrl && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+          <div className="relative bg-white rounded p-4 max-w-[90vw] max-h-[90vh]">
+            <button
+              onClick={() => setPreviewImageUrl("")}
+              className="absolute top-1 right-2 text-black text-3xl font-bold hover:text-red-600"
+              aria-label="Close preview"
+            >
+              &times;
+            </button>
+            <img
+              src={previewImageUrl}
+              alt="Preview"
+              className="max-w-full max-h-[80vh] object-contain rounded"
+            />
+          </div>
+        </div>
       )}
     </div>
   );

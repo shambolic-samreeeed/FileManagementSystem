@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import UserFiles from "./pages/UserFiles";
+import UserFolders from "./pages/UserFolders";
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,9 @@ const router = createBrowserRouter([
       },{
         path:'/files',
         element:<UserFiles/>
+      },{
+        path:'/folders',
+        element:<UserFolders/>
       }
     ]
   }

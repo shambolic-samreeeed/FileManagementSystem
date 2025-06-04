@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import UserFiles from "./pages/UserFiles";
 import UserFolders from "./pages/UserFolders";
+import FolderContents from "./pages/FolderContents";
+import DriveSyncSettings from "./components/Drive/DriveSyncSettings";
 
 
 const router = createBrowserRouter([
@@ -34,6 +36,12 @@ const router = createBrowserRouter([
       },{
         path:'/folders',
         element:<UserFolders/>
+      },{
+        path:'/folders/:folderId',
+        element:<FolderContents/>
+      },{
+        path:'/settings/drive',
+        element:<DriveSyncSettings/>
       }
     ]
   }

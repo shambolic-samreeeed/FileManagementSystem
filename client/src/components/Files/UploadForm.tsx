@@ -18,7 +18,8 @@ const UploadForm = () => {
 
     setStatus({ loading: true, error: "", success: "" });
     try {
-      await uploadFile(file);
+      const resUploadfiles=await uploadFile(file);
+      console.log(resUploadfiles);
       setFile(null);
       setStatus({ loading: false, error: "", success: "File uploaded successfully!" });
       nav('/files')

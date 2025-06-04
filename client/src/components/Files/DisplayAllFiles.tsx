@@ -4,11 +4,17 @@ import Cookies from "js-cookie";
 import { fetchFiles } from "../../services/fileUploadService";
 
 interface FileItem {
+  _id: string; // add this for stable keys
   fileName: string;
   path: string;
   size: number;
   uploadDate: string;
   mimeType: string;
+  googleDrive?: {
+    fileId: string;
+    link: string; 
+    syncStatus: string;
+  };
 }
 
 const DisplayAllFiles = () => {
@@ -21,6 +27,7 @@ const DisplayAllFiles = () => {
     const getFiles = async () => {
       try {
         const fileResponse = await fetchFiles();
+        console.log("full file response", fileResponse);
 
         if (Array.isArray(fileResponse)) {
           const sortedFiles = fileResponse.sort(
@@ -28,6 +35,12 @@ const DisplayAllFiles = () => {
               new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
           );
           setFiles(sortedFiles);
+
+          sortedFiles.forEach((file) => {
+            if (file.googleDrive?.link) {
+              console.log(`Drive link for ${file.fileName}: ${file.googleDrive.link}`);
+            }
+          });
         }
       } catch (err) {
         console.error("Error fetching files:", err);
@@ -40,7 +53,6 @@ const DisplayAllFiles = () => {
     getFiles();
   }, []);
 
-  // Clean up object URL on unmount or when previewImageUrl changes
   useEffect(() => {
     return () => {
       if (previewImageUrl) {
@@ -52,6 +64,12 @@ const DisplayAllFiles = () => {
   const isImage = (mimeType: string) => mimeType.startsWith("image/");
 
   const handleFileClick = async (file: FileItem) => {
+    if (file.googleDrive?.link) {
+      // Open Google Drive link in new tab
+      window.open(file.googleDrive.link, "_blank");
+      return; // stop further processing
+    }
+
     if (isImage(file.mimeType)) {
       try {
         const token = Cookies.get("token");
@@ -85,41 +103,62 @@ const DisplayAllFiles = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-6"> Recent Uploads</h2>
+      <h2 className="text-2xl font-semibold mb-6">Recent Uploads</h2>
+
       {files.length === 0 ? (
         <p>No files found.</p>
       ) : (
-        <ul className="space-y-4">
-          {files.map((file, index) => (
-            <li
-              key={index}
+        <div className="space-y-2">
+          <div className="grid grid-cols-3 font-semibold text-gray-600 px-4 py-2 border-b">
+            <span>File Name</span>
+            <span className="text-right">Size</span>
+            <span className="text-right">Uploaded</span>
+          </div>
+
+          {files.map((file) => (
+            <div
+              key={file._id} // use stable key here
               onClick={() => handleFileClick(file)}
-              className="bg-white shadow p-4 rounded border hover:shadow-2xl cursor-pointer transition border-gray-200"
+              className="grid grid-cols-3 items-center px-4 py-3 bg-white shadow rounded cursor-pointer transition hover:shadow-2xl border border-gray-200"
               title="Click to open file preview"
             >
-              <div className="flex items-center gap-2 mb-2">
-                {isImage(file.mimeType) ? (
-                  <FaFileImage className="text-blue-500" />
-                ) : (
-                  <FaFileImage className="text-gray-400" />
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <FaFileImage
+                    className={`flex-shrink-0 ${
+                      isImage(file.mimeType) ? "text-blue-500" : "text-gray-400"
+                    }`}
+                  />
+                  <span className="truncate">{file.fileName}</span>
+                </div>
+
+                {/* Google Drive link */}
+                {file.googleDrive?.link && (
+                  <a
+                    href={file.googleDrive.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 text-sm underline"
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent triggering parent click
+                    }}
+                  >
+                    View on Drive
+                  </a>
                 )}
-                <span className="font-semibold">{file.fileName}</span>
               </div>
-              <p>
-                <strong>Type:</strong> {file.mimeType}
-              </p>
-              <p>
-                <strong>Size:</strong> {(file.size / (1024 * 1024)).toFixed(2)} MB
-              </p>
-              <p>
-                <strong>Uploaded:</strong> {new Date(file.uploadDate).toLocaleString()}
-              </p>
-            </li>
+
+              <span className="text-right">
+                {(file.size / (1024 * 1024)).toFixed(2)} MB
+              </span>
+              <span className="text-right">
+                {new Date(file.uploadDate).toLocaleString()}
+              </span>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
-      {/* Image preview modal */}
       {previewImageUrl && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
           <div className="relative bg-white rounded p-4 max-w-[90vw] max-h-[90vh]">

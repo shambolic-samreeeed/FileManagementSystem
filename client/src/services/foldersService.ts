@@ -27,26 +27,42 @@ export const fetchFolders = async () =>{
     return response.data.data ?? [];
 };
 
-export const fetchFilesInFolder = async (folderId: string) => {
+// Fetch files in a folder
+export const fetchFilesInFolder = async (folderId: string): Promise<any[]> => {
   const token = Cookies.get("token");
 
   try {
-    const response = await axios.get(`${BASE_URL}/file/list?folder=${folderId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await axios.get(`${BASE_URL}/folder/list/files/${folderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    return response.data;
+
+    console.log("API response for files:", response.data);
+
+    // If API wraps files inside `data` property
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+
+    // If API returns array directly
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    throw new Error("Unexpected response format: expected an array");
   } catch (error) {
-    console.error("Error fetching files:", error);
-    throw new Error("Failed to load files in folder.");
+    console.error("fetchFilesInFolder error:", error);
+    throw error;
   }
 };
 
-// Upload a file into a specific folder
-export const uploadFileToFolder = async (folderId: string, file: File) => {
+// Upload file to a folder
+export async function uploadFileToFolder(folderId: string, file: File) {
   const token = Cookies.get("token");
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("folder", folderId);
+  formData.append("folder", folderId); // important: send folderId in 'folder' field as API expects
 
   try {
     const response = await axios.post(`${BASE_URL}/file/upload`, formData, {
@@ -56,10 +72,10 @@ export const uploadFileToFolder = async (folderId: string, file: File) => {
       },
     });
 
+    console.log("Upload response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error uploading file:", error);
-    throw new Error("File upload failed.");
+    console.error("uploadFileToFolder error:", error);
+    throw error;
   }
-};
-
+}

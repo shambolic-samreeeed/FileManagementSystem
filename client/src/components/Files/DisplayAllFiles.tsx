@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { fetchFiles } from "../../services/fileUploadService";
 
 interface FileItem {
-  _id: string; // add this for stable keys
+  _id: string;
   fileName: string;
   path: string;
   size: number;
@@ -12,7 +12,7 @@ interface FileItem {
   mimeType: string;
   googleDrive?: {
     fileId: string;
-    link: string; 
+    link: string;
     syncStatus: string;
   };
 }
@@ -32,13 +32,16 @@ const DisplayAllFiles = () => {
         if (Array.isArray(fileResponse)) {
           const sortedFiles = fileResponse.sort(
             (a, b) =>
-              new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+              new Date(b.uploadDate).getTime() -
+              new Date(a.uploadDate).getTime()
           );
           setFiles(sortedFiles);
 
           sortedFiles.forEach((file) => {
             if (file.googleDrive?.link) {
-              console.log(`Drive link for ${file.fileName}: ${file.googleDrive.link}`);
+              console.log(
+                `Drive link for ${file.fileName}: ${file.googleDrive.link}`
+              );
             }
           });
         }
@@ -65,9 +68,8 @@ const DisplayAllFiles = () => {
 
   const handleFileClick = async (file: FileItem) => {
     if (file.googleDrive?.link) {
-      // Open Google Drive link in new tab
       window.open(file.googleDrive.link, "_blank");
-      return; // stop further processing
+      return;
     }
 
     if (isImage(file.mimeType)) {

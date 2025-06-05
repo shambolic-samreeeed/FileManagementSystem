@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerSchema } from "../../utils/validationSchemas";
 import { useFormik } from "formik";
 import { useState } from "react";
-import { register } from "../../services/authenticationService";
+import { login, register } from "../../services/authenticationService";
 
 
 const RegisterForm = () => {
@@ -16,6 +16,7 @@ const RegisterForm = () => {
       try {
         setError("");
         await register(values.email, values.password);
+        await login(values.email, values.password);
         nav("/home");
       } catch (err: any) {
         setError("Registration failed. Please check your input.");

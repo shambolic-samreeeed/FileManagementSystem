@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaFileImage } from "react-icons/fa6";
 import Cookies from "js-cookie";
 import { fetchFiles } from "../../services/fileUploadService";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface FileItem {
   _id: string;
@@ -101,7 +102,21 @@ const DisplayAllFiles = () => {
   };
 
   if (loading) return <p className="text-center mt-10">🔄 Loading...</p>;
-  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
+if (error) return (
+  <div className="flex flex-col items-center justify-center gap-4 mt-10 text-red-600">
+    <div className="w-82 h-82">
+      <DotLottieReact
+        src="https://lottie.host/ab900c49-1275-43a1-8a43-e736f6b4fe65/BsAY9VpJY4.lottie"
+        loop
+        autoplay
+      />
+    </div>
+    <p className="text-center text-lg font-semibold">
+      {error}
+    </p>
+  </div>
+);
+
 
   return (
     <div className="p-8">

@@ -1,24 +1,16 @@
 import { useEffect, useState } from "react";
 import { getDriveSyncStatus, updateDriveSync } from "../../services/driveService";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const DriveSyncSettings = () => {
-  // State to track if Drive sync is enabled
   const [syncEnabled, setSyncEnabled] = useState(false);
-
-  // State to track if the app is connected to Google Drive
   const [isConnected, setIsConnected] = useState(false);
-
-  // State for loading indicator during initial fetch
   const [loading, setLoading] = useState(true);
-
-  // State for loading indicator during update
   const [updating, setUpdating] = useState(false);
-
-  // Error and success messages
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Fetch initial sync status when component mounts
   useEffect(() => {
     const fetchStatus = async () => {
       try {
@@ -29,6 +21,7 @@ const DriveSyncSettings = () => {
       } catch (err) {
         console.error("Failed to fetch drive sync status", err);
         setError("Failed to fetch sync status");
+        toast.error("Failed to fetch sync status");
       } finally {
         setLoading(false);
       }
@@ -37,36 +30,42 @@ const DriveSyncSettings = () => {
     fetchStatus();
   }, []);
 
-  // Handle toggling the Drive sync setting
   const handleToggle = async () => {
     setUpdating(true);
     setError("");
     setMessage("");
 
     try {
-      // Update the sync setting on the server
       const data = await updateDriveSync(!syncEnabled);
       setSyncEnabled(data.data.syncEnabled);
-      setMessage(data.message || "Drive sync setting updated");
+      const successMsg = data.message || "Drive sync setting updated";
+      setMessage(successMsg);
+      toast.success(successMsg, {
+        position: "top-right",
+        autoClose: 3000,
+        pauseOnHover: true,
+      });
     } catch (err) {
       console.error("Failed to update drive sync", err);
-      setError("Failed to update sync setting");
+      const errorMsg = "Failed to update sync setting";
+      setError(errorMsg);
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 3000,
+        pauseOnHover: true,
+      });
     } finally {
       setUpdating(false);
     }
   };
 
-  // Show loading message while fetching status
   if (loading) return <p className="p-4 text-left">Loading Drive sync status...</p>;
-
-  // Show error if failed to fetch
   if (error) return <p className="text-red-500 p-4 text-left">{error}</p>;
 
   return (
-    <div className="p-6 rounded shadow max-w-md bg-white text-left">
+    <div className="p-6 rounded shadow max-w-md bg-white text-center">
       <h2 className="text-xl font-semibold mb-4">Google Drive Sync Settings</h2>
 
-      {/* Display current connection and sync status */}
       <div className="mb-3">
         <p>
           Status:{" "}
@@ -82,7 +81,6 @@ const DriveSyncSettings = () => {
         </p>
       </div>
 
-      {/* Button to enable/disable sync */}
       <button
         onClick={handleToggle}
         disabled={updating || !isConnected}
@@ -99,9 +97,11 @@ const DriveSyncSettings = () => {
           : "Enable Drive Sync"}
       </button>
 
-      {/* Display success or error message after update */}
       {message && <p className="text-green-600 mt-3">{message}</p>}
       {error && <p className="text-red-500 mt-3">{error}</p>}
+
+      {/* Render toast notifications */}
+      <ToastContainer />
     </div>
   );
 };

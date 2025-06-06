@@ -1,6 +1,7 @@
 import { useState } from "react";
 import NavBar from "../components/NavBar/NavBar";
 import ProfileDetails from "../components/Profile/ProfileDetails";
+import Analytics from "../components/Profile/Analytics";
 
 // Dummy content components
 const AnalyticsContent = () => <div><h2 className="text-xl font-bold mb-4">Analytics</h2><p>Analytics data goes here.</p></div>;
@@ -13,7 +14,7 @@ const ProfilePage = () => {
       case "profile":
         return <ProfileDetails/>
       case "analytics":
-        return <AnalyticsContent />;
+        return <Analytics/>
       default:
         return null;
     }

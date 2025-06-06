@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FaFileImage } from "react-icons/fa6";
 import Cookies from "js-cookie";
-import { fetchFiles } from "../../services/fileUploadService";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { fetchFiles, downloadFileById } from "../../services/fileUploadService";
 
 interface FileItem {
   _id: string;
@@ -28,8 +28,6 @@ const DisplayAllFiles = () => {
     const getFiles = async () => {
       try {
         const fileResponse = await fetchFiles();
-        console.log("full file response", fileResponse);
-
         if (Array.isArray(fileResponse)) {
           const sortedFiles = fileResponse.sort(
             (a, b) =>
@@ -37,14 +35,6 @@ const DisplayAllFiles = () => {
               new Date(a.uploadDate).getTime()
           );
           setFiles(sortedFiles);
-
-          sortedFiles.forEach((file) => {
-            if (file.googleDrive?.link) {
-              console.log(
-                `Drive link for ${file.fileName}: ${file.googleDrive.link}`
-              );
-            }
-          });
         }
       } catch (err) {
         console.error("Error fetching files:", err);
@@ -59,13 +49,27 @@ const DisplayAllFiles = () => {
 
   useEffect(() => {
     return () => {
-      if (previewImageUrl) {
-        URL.revokeObjectURL(previewImageUrl);
-      }
+      if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
     };
   }, [previewImageUrl]);
 
   const isImage = (mimeType: string) => mimeType.startsWith("image/");
+
+  const handleDownload = async (file: FileItem) => {
+    try {
+      const blob = await downloadFileById(file._id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      alert("Download failed: " + err.message);
+    }
+  };
 
   const handleFileClick = async (file: FileItem) => {
     if (file.googleDrive?.link) {
@@ -86,10 +90,7 @@ const DisplayAllFiles = () => {
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch image");
-        }
-
+        if (!response.ok) throw new Error("Failed to fetch image");
         const blob = await response.blob();
         const imageUrl = URL.createObjectURL(blob);
         setPreviewImageUrl(imageUrl);
@@ -102,21 +103,20 @@ const DisplayAllFiles = () => {
   };
 
   if (loading) return <p className="text-center mt-10">🔄 Loading...</p>;
-if (error) return (
-  <div className="flex flex-col items-center justify-center gap-4 mt-10 text-red-600">
-    <div className="w-82 h-82">
-      <DotLottieReact
-        src="https://lottie.host/ab900c49-1275-43a1-8a43-e736f6b4fe65/BsAY9VpJY4.lottie"
-        loop
-        autoplay
-      />
-    </div>
-    <p className="text-center text-lg font-semibold">
-      {error}
-    </p>
-  </div>
-);
 
+  if (error)
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 mt-10 text-red-600">
+        <div className="w-82 h-82">
+          <DotLottieReact
+            src="https://lottie.host/ab900c49-1275-43a1-8a43-e736f6b4fe65/BsAY9VpJY4.lottie"
+            loop
+            autoplay
+          />
+        </div>
+        <p className="text-center text-lg font-semibold">{error}</p>
+      </div>
+    );
 
   return (
     <div className="p-8">
@@ -134,12 +134,22 @@ if (error) return (
 
           {files.map((file) => (
             <div
-              key={file._id} // use stable key here
+              key={file._id}
               onClick={() => handleFileClick(file)}
               className="grid grid-cols-3 items-center px-4 py-3 bg-white shadow rounded cursor-pointer transition hover:shadow-2xl border border-gray-200"
               title="Click to open file preview"
             >
               <div className="flex flex-col gap-1">
+                <button
+                  className="text-blue-600 text-sm underline ml-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(file);
+                  }}
+                >
+                  Download
+                </button>
+
                 <div className="flex items-center gap-2 overflow-hidden">
                   <FaFileImage
                     className={`flex-shrink-0 ${
@@ -149,20 +159,17 @@ if (error) return (
                   <span className="truncate">{file.fileName}</span>
                 </div>
 
-                {/* Google Drive link */}
-                {file.googleDrive?.link && (
+                {/* {file.googleDrive?.link && (
                   <a
                     href={file.googleDrive.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 text-sm underline"
-                    onClick={(e) => {
-                      e.stopPropagation(); // prevent triggering parent click
-                    }}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     View on Drive
                   </a>
-                )}
+                )} */}
               </div>
 
               <span className="text-right">

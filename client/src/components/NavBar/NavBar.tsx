@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
 import Cookies from "js-cookie";
+import DriveSyncSettings from "../Drive/DriveSyncSettings";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +78,7 @@ const NavBar = () => {
             >
               Folders
             </Link>
+
           </div>
         </div>
 

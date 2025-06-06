@@ -46,10 +46,59 @@ export const fetchFiles = async () => {
   return response.data.data;
 };
 
-//deleting a file
 
-// export const deleteFile = async(fileId:string)=>{
-//   const token = Cookies.get('token');
+export const downloadByFileName = async (filename: string)=>{
+  const token = Cookies.get('token');
+  const url = `${BASE_URL}/file/download/name/${encodeURIComponent(filename)}`;
 
-//   const response = await axios.delete(`${BASE_URL}/`)
-// }
+  const response = await fetch(url,{
+    method:'GET',
+    headers:{
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if(!response.ok){
+    throw new Error("download failed");
+  }
+
+  return response.blob();
+}
+
+// Download by file name
+export const downloadFileByName = async (fileName: string) => {
+  const token = Cookies.get("token");
+  const url = `${BASE_URL}/file/download/name/${encodeURIComponent(fileName)}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Download failed");
+  }
+
+  return response.blob();
+};
+
+// Download by file ID
+export const downloadFileById = async (id: string) => {
+  const token = Cookies.get("token");
+  const url = `${BASE_URL}/file/download/id/${id}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Download failed");
+  }
+
+  return response.blob();
+};

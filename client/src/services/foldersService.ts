@@ -79,3 +79,21 @@ export async function uploadFileToFolder(folderId: string, file: File) {
     throw error;
   }
 }
+
+export const deleteFolder = async (folderId: string) => {
+  const token = Cookies.get("token");
+
+  try {
+    const response = await axios.delete(`${BASE_URL}/folder/delete/${folderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data; 
+  } catch (error) {
+    console.error("deleteFolder error:", error);
+    throw error;
+  }
+};
+

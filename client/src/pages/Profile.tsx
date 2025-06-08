@@ -2,12 +2,12 @@ import { useState } from "react";
 import NavBar from "../components/NavBar/NavBar";
 import ProfileDetails from "../components/Profile/ProfileDetails";
 import Analytics from "../components/Profile/Analytics";
-
-// Dummy content components
-const AnalyticsContent = () => <div><h2 className="text-xl font-bold mb-4">Analytics</h2><p>Analytics data goes here.</p></div>;
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  const nav = useNavigate();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -20,9 +20,11 @@ const ProfilePage = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logged out");
+
+    const handleLogout = () => {
+    Cookies.remove("token");
+    Cookies.remove("email");
+    nav('/login')
   };
 
   return (

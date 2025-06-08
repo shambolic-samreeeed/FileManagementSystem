@@ -3,6 +3,7 @@ import { FaFileImage } from "react-icons/fa6";
 import Cookies from "js-cookie";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { fetchFiles, downloadFileById } from "../../services/fileUploadService";
+import { FaDownload } from "react-icons/fa6";
 
 interface FileItem {
   _id: string;
@@ -119,13 +120,13 @@ const DisplayAllFiles = () => {
     );
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-6">Recent Uploads</h2>
+    <div className="p-6 sm:p-8">
+      <h2 className="text-2xl font-semibold mb-6">📂 Recent Uploads</h2>
 
       {files.length === 0 ? (
         <p>No files found.</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="grid grid-cols-3 font-semibold text-gray-600 px-4 py-2 border-b">
             <span>File Name</span>
             <span className="text-right">Size</span>
@@ -136,46 +137,48 @@ const DisplayAllFiles = () => {
             <div
               key={file._id}
               onClick={() => handleFileClick(file)}
-              className="grid grid-cols-3 items-center px-4 py-3 bg-white shadow rounded cursor-pointer transition hover:shadow-2xl border border-gray-200"
-              title="Click to open file preview"
+              className="grid grid-cols-3 items-center px-4 py-3 bg-white shadow-sm hover:shadow-md rounded-lg cursor-pointer border border-gray-200 transition"
+              title="Click to preview file"
             >
-              <div className="flex flex-col gap-1">
-                <button
-                  className="text-blue-600 text-sm underline ml-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDownload(file);
-                  }}
-                >
-                  Download
-                </button>
-
-                <div className="flex items-center gap-2 overflow-hidden">
+              <div className="flex flex-col gap-1 truncate">
+                <div className="flex items-center gap-2">
                   <FaFileImage
-                    className={`flex-shrink-0 ${
+                    className={`flex-shrink-0 text-lg ${
                       isImage(file.mimeType) ? "text-blue-500" : "text-gray-400"
                     }`}
                   />
-                  <span className="truncate">{file.fileName}</span>
+                  <span className="truncate font-medium">{file.fileName}</span>
                 </div>
 
-                {/* {file.googleDrive?.link && (
-                  <a
-                    href={file.googleDrive.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 text-sm underline"
-                    onClick={(e) => e.stopPropagation()}
+                <div className="flex gap-2 mt-1 ml-6">
+                  <button
+                    className="text-blue-600 text-sm "
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownload(file);
+                    }}
                   >
-                    View on Drive
-                  </a>
-                )} */}
+                    <FaDownload />
+                  </button>
+
+                  {file.googleDrive?.link && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(file.googleDrive?.link, "_blank");
+                      }}
+                      className="text-green-600 text-sm underline cursor-pointer"
+                    >
+                      Drive Link
+                    </button>
+                  )}
+                </div>
               </div>
 
-              <span className="text-right">
+              <span className="text-right text-sm text-gray-700">
                 {(file.size / (1024 * 1024)).toFixed(2)} MB
               </span>
-              <span className="text-right">
+              <span className="text-right text-sm text-gray-500">
                 {new Date(file.uploadDate).toLocaleString()}
               </span>
             </div>
@@ -185,10 +188,10 @@ const DisplayAllFiles = () => {
 
       {previewImageUrl && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-          <div className="relative bg-white rounded p-4 max-w-[90vw] max-h-[90vh]">
+          <div className="relative bg-white rounded-lg p-4 max-w-[90vw] max-h-[90vh] shadow-xl">
             <button
               onClick={() => setPreviewImageUrl("")}
-              className="absolute top-1 right-2 text-black text-3xl font-bold hover:text-red-600"
+              className="absolute top-2 right-3 text-2xl text-gray-700 hover:text-red-500"
               aria-label="Close preview"
             >
               &times;

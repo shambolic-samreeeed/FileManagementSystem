@@ -1,6 +1,7 @@
 import axios from "axios";
 
-// Types
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export interface MostAccessedFile {
   fileName: string;
   path: string;
@@ -35,16 +36,18 @@ export interface DetailedAnalytics {
   lastHit: string;
 }
 
-// API calls
 export const getAnalyticsSummary = async (): Promise<AnalyticsSummary> => {
-  const res = await axios.get("/analytics/summary");
+  const res = await axios.get(`${BASE_URL}/analytics/summary`); // fixed typo here
   return res.data;
 };
 
 export const getDetailedAnalytics = async (): Promise<DetailedAnalytics[]> => {
-  const res = await axios.get("/analytics/detailed");
-  console.log("Detailed analytics API response:", res.data);
+  const res = await axios.get(`${BASE_URL}/analytics/detailed`);
 
-  // Defensive: return array or empty array if not
-  return Array.isArray(res.data) ? res.data : [];
+  if (!Array.isArray(res.data)) {
+    console.error("Expected array but got:", res.data);
+    return [];
+  }
+
+  return res.data;
 };

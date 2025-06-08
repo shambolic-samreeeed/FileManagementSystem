@@ -13,7 +13,7 @@ export const getDriveSyncStatus = async () => {
     },
   });
 
-  return response.data; // { syncEnabled: true, isConnected: true }
+  return response.data;
 };
 
 export const updateDriveSync = async (enabled: boolean) => {

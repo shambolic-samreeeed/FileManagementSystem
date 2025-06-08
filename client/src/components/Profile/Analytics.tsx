@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getDetailedAnalytics, getAnalyticsSummary  } from "../../services/analyticsService";
+// import {
+//   getAnalyticsSummary,
+//   getDetailedAnalytics,
+//   AnalyticsSummary,
+//   DetailedAnalytics,
+// } from "../../services/analyticsService";
+
+import { getAnalyticsSummary, getDetailedAnalytics } from "../../services/analyticsService";
 
 const Analytics = () => {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);

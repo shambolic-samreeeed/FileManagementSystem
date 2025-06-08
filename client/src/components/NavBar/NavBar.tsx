@@ -121,13 +121,19 @@ const NavBar = () => {
                 Profile
               </li>
 
-              <li
+              { loggedIn ? (<li
                 className="flex items-center gap-2 pl-2 py-2 text-red-600 hover:bg-gray-300 cursor-pointer"
                 onClick={handleLogout}
               >
                 <CiLogout className="size-6" />
                 Logout
-              </li>
+              </li>):(<li
+                className="flex items-center gap-2 pl-2 py-2 text-green-600 hover:bg-gray-300 cursor-pointer"
+                onClick={handleLogout}
+              >
+                <CiLogout className="size-6" />
+                Login
+              </li>)}
             </ul>
           </div>
         )}

@@ -92,4 +92,19 @@ export const deleteFolder = async (folderId: string) => {
   return response.data;
 };
 
-  
+export const renameFolder = async (folderId: string, newName: string) => {
+  const token = Cookies.get("token");
+
+  const response = await axios.post(
+    `${BASE_URL}/folder/rename/${folderId}`,
+    { name: newName },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+}; 

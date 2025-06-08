@@ -1,7 +1,7 @@
 // components/DisplayAllFolders.tsx
 import { useEffect, useState } from "react";
-import { FaFolder, FaTrash } from "react-icons/fa6";
-import { fetchFolders, deleteFolder } from "../../services/foldersService";
+import { FaFolder, FaTrash, FaPen } from "react-icons/fa6";
+import { fetchFolders, deleteFolder, renameFolder } from "../../services/foldersService";
 import { Link } from "react-router-dom";
 
 interface FolderItem {
@@ -15,6 +15,8 @@ const DisplayAllFolders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameInput, setRenameInput] = useState("");
 
   useEffect(() => {
     const getFolders = async () => {
@@ -43,14 +45,31 @@ const DisplayAllFolders = () => {
 
     try {
       setDeletingId(folderId);
-      const result = await deleteFolder(folderId);
-      console.log("Delete API success:", result);
+      await deleteFolder(folderId);
       setFolders((prev) => prev.filter((folder) => folder._id !== folderId));
     } catch (err) {
       console.error("Delete API failed:", err);
       alert("Failed to delete folder. Please try again.");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleRename = async (folderId: string) => {
+    if (!renameInput.trim()) return alert("Folder name cannot be empty.");
+
+    try {
+      await renameFolder(folderId, renameInput.trim());
+      setFolders((prev) =>
+        prev.map((folder) =>
+          folder._id === folderId ? { ...folder, name: renameInput.trim() } : folder
+        )
+      );
+      setRenamingId(null);
+      setRenameInput("");
+    } catch (err) {
+      console.error("Rename API failed:", err);
+      alert("Failed to rename folder.");
     }
   };
 
@@ -67,25 +86,66 @@ const DisplayAllFolders = () => {
           {folders.map((folder) => (
             <li
               key={folder._id}
-              className="bg-yellow-100 border p-4 rounded shadow-sm flex items-center justify-between hover:bg-yellow-200 transition-all duration-200"
+              className="bg-yellow-100 border p-4 rounded shadow-sm hover:bg-yellow-200 flex flex-col gap-2 transition-all duration-200"
               title={`Created: ${new Date(folder.createdAt).toLocaleString()}`}
             >
-              <Link
-                to={`/folders/${folder._id}`}
-                className="flex items-center gap-2 text-lg font-medium text-yellow-700 hover:underline"
-              >
-                <FaFolder className="text-yellow-600" />
-                {folder.name}
-              </Link>
-
-              <button
-                onClick={() => handleDelete(folder._id)}
-                disabled={deletingId === folder._id}
-                title="Delete Folder"
-                className="ml-4 text-red-600 hover:text-red-800"
-              >
-                {deletingId === folder._id ? "Deleting..." : <FaTrash />}
-              </button>
+              <div className="flex justify-between items-center">
+                {renamingId === folder._id ? (
+                  <>
+                    <input
+                      type="text"
+                      value={renameInput}
+                      onChange={(e) => setRenameInput(e.target.value)}
+                      className="border px-2 py-1 rounded w-full mr-2"
+                    />
+                    <button
+                      onClick={() => handleRename(folder._id)}
+                      className="text-green-600 hover:text-green-800 text-sm"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setRenamingId(null);
+                        setRenameInput("");
+                      }}
+                      className="ml-2 text-gray-500 hover:text-gray-700 text-sm"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to={`/folders/${folder._id}`}
+                      className="flex items-center gap-2 text-lg font-medium text-yellow-700 hover:underline"
+                    >
+                      <FaFolder className="text-yellow-600" />
+                      {folder.name}
+                    </Link>
+                    <div className="flex gap-3 text-lg">
+                      <button
+                        onClick={() => {
+                          setRenamingId(folder._id);
+                          setRenameInput(folder.name);
+                        }}
+                        title="Rename"
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <FaPen />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(folder._id)}
+                        disabled={deletingId === folder._id}
+                        title="Delete"
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        {deletingId === folder._id ? "..." : <FaTrash />}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </li>
           ))}
         </ul>

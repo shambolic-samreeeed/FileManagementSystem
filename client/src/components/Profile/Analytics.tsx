@@ -1,126 +1,59 @@
-import React, { useEffect, useState } from "react";
-// import {
-//   getAnalyticsSummary,
-//   getDetailedAnalytics,
-//   AnalyticsSummary,
-//   DetailedAnalytics,
-// } from "../../services/analyticsService";
-
-import { getAnalyticsSummary, getDetailedAnalytics } from "../../services/analyticsService";
+import { useEffect, useState } from "react";
+import { fetchAnalyticsSummary } from "../../services/fileUploadService";
 
 const Analytics = () => {
-  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
-  const [detailed, setDetailed] = useState<DetailedAnalytics[]>([]);
+  const [totalFiles, setTotalFiles] = useState<number>(0);
+  const [totalStorage, setTotalStorage] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
+    const loadSummary = async () => {
       try {
-        const [summaryRes, detailedRes] = await Promise.all([
-          getAnalyticsSummary(),
-          getDetailedAnalytics(),
-        ]);
-
-        setSummary(summaryRes);
-        setDetailed(detailedRes);
+        const response = await fetchAnalyticsSummary(); 
+        setTotalFiles(response.data.totalFiles ?? 0);
+        setTotalStorage(response.data.totalStorage ?? 0);
       } catch (err) {
-        console.error("Error fetching analytics:", err);
+        console.error(err);
+        setError("Failed to load analytics summary.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAnalytics();
+    loadSummary();
   }, []);
 
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 B";
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+  const formatSize = (bytes: number) => {
+    if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    if (bytes >= 1024) return (bytes / 1024).toFixed(2) + " KB";
+    return bytes + " B";
   };
 
-  if (loading) return <p className="p-6">Loading analytics...</p>;
-
-  if (!summary) return <p className="p-6 text-red-600">Failed to load analytics summary.</p>;
-
   return (
-    <div className="p-6 space-y-8">
-      {/* Summary Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Analytics Summary</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-blue-100 p-4 rounded shadow">
-            <h3 className="font-semibold">Total Files</h3>
-            <p>{summary.totalFiles}</p>
-          </div>
-          <div className="bg-green-100 p-4 rounded shadow">
-            <h3 className="font-semibold">Total Folders</h3>
-            <p>{summary.totalFolders}</p>
-          </div>
-          <div className="bg-purple-100 p-4 rounded shadow">
-            <h3 className="font-semibold">Total Storage</h3>
-            <p>{formatBytes(summary.totalStorage)}</p>
-          </div>
-        </div>
+  <div className="p-4 w-full max-w-md mx-auto mt-6 bg-white shadow rounded-lg hover:shadow-md transition duration-300">
+    <h1 className="text-xl font-bold text-center mb-4">Analytics Summary</h1>
 
-        <h3 className="text-xl font-bold mt-6 mb-2">Most Accessed Files</h3>
-        <div className="space-y-3">
-          {summary.mostAccessedFiles && summary.mostAccessedFiles.length > 0 ? (
-            summary.mostAccessedFiles.map((file, idx) => (
-              <div key={idx} className="p-4 bg-white border rounded shadow">
-                <p><strong>Name:</strong> {file.fileName}</p>
-                <p><strong>Downloads:</strong> {file.downloadCount}</p>
-                <p><strong>Uploaded:</strong> {new Date(file.uploadDate).toLocaleString()}</p>
-                <p><strong>Access:</strong> {file.accessLevel}</p>
-                {file.googleDrive?.link && (
-                  <a
-                    href={file.googleDrive.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    View on Google Drive
-                  </a>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="italic text-gray-500">No accessed files available.</p>
-          )}
+    {loading ? (
+      <p className="text-gray-600 text-center">Loading...</p>
+    ) : error ? (
+      <p className="text-red-500 text-center">{error}</p>
+    ) : (
+      <div className="flex flex-col items-center gap-6">
+        <div className="text-center">
+          <p className="text-gray-700">Total Files</p>
+          <p className="text-3xl font-bold">{totalFiles}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-gray-700">Total Storage Used</p>
+          <p className="text-2xl font-semibold">
+            {formatSize(totalStorage)}
+          </p>
         </div>
       </div>
-
-      {/* Detailed Logs Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Detailed Endpoint Hits</h2>
-        {Array.isArray(detailed) && detailed.length > 0 ? (
-          <table className="w-full table-auto border-collapse border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-4 py-2 text-left">User</th>
-                <th className="border px-4 py-2 text-left">Endpoint</th>
-                <th className="border px-4 py-2 text-left">Hit Count</th>
-                <th className="border px-4 py-2 text-left">Last Access</th>
-              </tr>
-            </thead>
-            <tbody>
-              {detailed.map((log, idx) => (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2">{log.user}</td>
-                  <td className="border px-4 py-2">{log.endpoint}</td>
-                  <td className="border px-4 py-2">{log.hitCount}</td>
-                  <td className="border px-4 py-2">{new Date(log.lastHit).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="italic text-gray-500">No detailed logs available.</p>
-        )}
-      </div>
-    </div>
-  );
+    )}
+  </div>
+);
 };
 
 export default Analytics;

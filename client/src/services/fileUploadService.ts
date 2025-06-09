@@ -18,7 +18,7 @@ export const uploadFile = async (file: File) => {
 
   if (!response.ok) throw new Error("Upload failed");
 
-  return response.json(); // This should include googleDrive.link
+  return response.json(); 
 };
 
 

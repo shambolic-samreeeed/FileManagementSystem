@@ -1,6 +1,9 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import { fetchFilesInFolder, uploadFileToFolder } from "../services/foldersService";
+import {
+  fetchFilesInFolder,
+  uploadFileToFolder,
+} from "../services/foldersService";
 
 interface FileItem {
   fileName: string;
@@ -118,7 +121,10 @@ const FolderContentsPage = () => {
       {files.length > 0 ? (
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {files.map((file) => (
-            <li key={file.fileName + file.uploadDate} className="bg-white border rounded p-4 shadow">
+            <li
+              key={file.fileName + file.uploadDate}
+              className="bg-white border rounded p-4 shadow"
+            >
               <p className="font-semibold">{file.fileName}</p>
               <p className="text-sm text-gray-600">
                 {new Date(file.uploadDate).toLocaleString()}

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 const DisplayFiles = () => {
   const [totalFiles, setTotalFiles] = useState("0");
-  const [totalStorage, setTotalStorage] = useState("0");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const nav = useNavigate();
@@ -14,7 +13,6 @@ const DisplayFiles = () => {
       try {
         const response = await fetchAnalyticsSummary();
         setTotalFiles(response.data.totalFiles);
-        setTotalStorage(response.data.totalStorage);
       } catch (err) {
         setError("Failed to load file count");
       } finally {

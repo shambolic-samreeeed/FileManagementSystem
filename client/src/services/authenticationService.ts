@@ -1,7 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-//base url being http://localhost:5000
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 // Register function that takes email and password as paramenters and sends a POST request to the URL with a JSON Payload email and password and then it returns the response data.

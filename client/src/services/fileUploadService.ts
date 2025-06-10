@@ -3,12 +3,12 @@ import Cookies from "js-cookie";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-// uploadFile function is an async function  takes the file name annd folder id as optional
+// Upload a file
 export const uploadFile = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch("http://localhost:5000/file/upload", {
+  const response = await fetch(`${BASE_URL}/file/upload`, {
     method: "POST",
     body: formData,
     headers: {
@@ -18,10 +18,10 @@ export const uploadFile = async (file: File) => {
 
   if (!response.ok) throw new Error("Upload failed");
 
-  return response.json(); 
+  return response.json();
 };
 
-
+// Fetch analytics summary
 export const fetchAnalyticsSummary = async () => {
   const token = Cookies.get("token");
 
@@ -34,6 +34,7 @@ export const fetchAnalyticsSummary = async () => {
   return response.data;
 };
 
+// Fetch all files
 export const fetchFiles = async () => {
   const token = Cookies.get("token");
 
@@ -46,26 +47,26 @@ export const fetchFiles = async () => {
   return response.data.data;
 };
 
-
-export const downloadByFileName = async (filename: string)=>{
-  const token = Cookies.get('token');
+// Download by file name
+export const downloadByFileName = async (filename: string) => {
+  const token = Cookies.get("token");
   const url = `${BASE_URL}/file/download/name/${encodeURIComponent(filename)}`;
 
-  const response = await fetch(url,{
-    method:'GET',
-    headers:{
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if(!response.ok){
-    throw new Error("download failed");
+  if (!response.ok) {
+    throw new Error("Download failed");
   }
 
   return response.blob();
-}
+};
 
-// Download by file name
+// Download by file name (duplicate function — optional to keep both)
 export const downloadFileByName = async (fileName: string) => {
   const token = Cookies.get("token");
   const url = `${BASE_URL}/file/download/name/${encodeURIComponent(fileName)}`;

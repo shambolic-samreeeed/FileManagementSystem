@@ -4,17 +4,21 @@ import NavBar from "../components/NavBar/NavBar"
 
 const Home = () => {
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <NavBar />
-      <div style={{ display: 'flex', height: 'calc(100vh - 60px)', gap: '1rem' }}>
+      
+      <div className="flex flex-col md:flex-row gap-4 p-4 md:h-[calc(100vh-60px)]">
         
-        <div style={{ flexBasis: '25%', display: 'flex', flexDirection: 'column' }}>
+        {/* Sidebar - Navigation Cards */}
+        <div className="w-full md:w-1/4">
           <NavigationCards />
         </div>
-        
-        <div style={{ flexBasis: '75%', overflowY: 'auto' }} className="mt-8 rounded-lg shadow bg-white">
+
+        {/* Main Content - Display Files */}
+        <div className="w-full md:w-3/4 overflow-y-auto bg-white rounded-lg shadow mt-4 md:mt-0">
           <DisplayAllFiles />
         </div>
+
       </div>
     </div>
   )

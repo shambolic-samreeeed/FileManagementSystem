@@ -12,6 +12,12 @@ const NavBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const location = useLocation();
+  const [toggleLoginPopup, setToggleLoginPopup] = useState(false);
+
+  const handlePopup = () =>{
+    setToggleLoginPopup(!toggleLoginPopup);
+  }
+
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -35,7 +41,6 @@ const NavBar = () => {
 
   return (
     <nav className="bg-white drop-shadow-md relative px-6 py-3">
-      {/* Container with logo, nav links, and profile all in one flex row */}
       <div className="flex items-center justify-between">
         {/* Logo */}
         <p
@@ -115,7 +120,7 @@ const NavBar = () => {
         </div>
       </div>
 
-      {/* Mobile menu dropdown (navigation links + profile + logout) */}
+      {/* Mobile menu dropdown*/}
       {menuOpen && (
         <div className="flex flex-col gap-3 mt-3 px-3 pb-4 md:hidden border-t border-gray-200">
           <Link
@@ -210,7 +215,8 @@ const NavBar = () => {
             {loggedIn ? (
               <li
                 className="flex items-center gap-2 pl-2 py-2 text-red-600 hover:bg-gray-300 cursor-pointer"
-                onClick={handleLogout}
+                // onClick={handleLogout}
+                onClick={()=>handlePopup()}
               >
                 <CiLogout className="text-[27px]" />
                 Logout
@@ -230,6 +236,43 @@ const NavBar = () => {
           </ul>
         </div>
       )}
+
+      {
+        toggleLoginPopup && (
+          <div
+      style={{
+        position: "fixed",
+        top: "20%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        backgroundColor: "white",
+        border: "1px solid #ccc",
+        padding: "20px",
+        borderRadius: "8px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+        zIndex: 1000,
+        width: "90%",
+        maxWidth: "300px",
+      }}
+    >
+      <p className="mb-4 text-center">Are you sure you want to logout?</p>
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={()=>setToggleLoginPopup(false)}
+          className="px-3 py-1 rounded border border-gray-400 hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleLogout}
+          className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+        )
+      }
     </nav>
   );
 };

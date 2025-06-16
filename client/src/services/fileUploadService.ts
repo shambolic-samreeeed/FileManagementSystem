@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = "https://file-management-azlf.onrender.com";
 
 // Upload a file
 export const uploadFile = async (file: File) => {
@@ -48,25 +48,6 @@ export const fetchFiles = async () => {
 };
 
 // Download by file name
-export const downloadByFileName = async (filename: string) => {
-  const token = Cookies.get("token");
-  const url = `${BASE_URL}/file/download/name/${encodeURIComponent(filename)}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Download failed");
-  }
-
-  return response.blob();
-};
-
-// Download by file name (duplicate function — optional to keep both)
 export const downloadFileByName = async (fileName: string) => {
   const token = Cookies.get("token");
   const url = `${BASE_URL}/file/download/name/${encodeURIComponent(fileName)}`;
@@ -79,7 +60,7 @@ export const downloadFileByName = async (fileName: string) => {
   });
 
   if (!response.ok) {
-    throw new Error("Download failed");
+    throw new Error("Download by file name failed");
   }
 
   return response.blob();
@@ -98,7 +79,7 @@ export const downloadFileById = async (id: string) => {
   });
 
   if (!response.ok) {
-    throw new Error("Download failed");
+    throw new Error("Download by file ID failed");
   }
 
   return response.blob();

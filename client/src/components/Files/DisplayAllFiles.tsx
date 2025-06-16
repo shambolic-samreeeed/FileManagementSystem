@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { FaFileImage } from "react-icons/fa6";
+import { FaFileImage, FaDownload } from "react-icons/fa6";
 import Cookies from "js-cookie";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { fetchFiles, downloadFileById } from "../../services/fileUploadService";
-import { FaDownload } from "react-icons/fa6";
 
 interface FileItem {
   _id: string;
@@ -32,8 +31,7 @@ const DisplayAllFiles = () => {
         if (Array.isArray(fileResponse)) {
           const sortedFiles = fileResponse.sort(
             (a, b) =>
-              new Date(b.uploadDate).getTime() -
-              new Date(a.uploadDate).getTime()
+              new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
           );
           setFiles(sortedFiles);
         }
@@ -81,7 +79,7 @@ const DisplayAllFiles = () => {
     if (isImage(file.mimeType)) {
       try {
         const token = Cookies.get("token");
-        const url = `http://localhost:5000/file/download/name/${encodeURIComponent(
+        const url = `https://file-management-azlf.onrender.com/file/download/name/${encodeURIComponent(
           file.fileName
         )}`;
 
@@ -121,7 +119,7 @@ const DisplayAllFiles = () => {
 
   return (
     <div className="p-6 sm:p-8">
-      <h2 className="text-2xl font-semibold mb-6">📂 Recent Uploads</h2>
+      <h2 className="text-2xl font-semibold mb-6"> Recent Uploads</h2>
 
       {files.length === 0 ? (
         <p>No files found.</p>
@@ -152,7 +150,7 @@ const DisplayAllFiles = () => {
 
                 <div className="flex gap-2 mt-1 ml-6">
                   <button
-                    className="text-blue-600 text-sm "
+                    className="text-blue-600 text-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDownload(file);

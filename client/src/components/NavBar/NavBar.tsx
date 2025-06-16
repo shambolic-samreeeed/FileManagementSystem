@@ -203,7 +203,7 @@ const NavBar = () => {
                 nav("/profile");
               }}
             >
-              <CgProfile className="text-xl p-1 rounded-full mr-2" />
+              <CgProfile className="text-[30px] p-1 rounded-full mr-2"  />
               Profile
             </li>
 
@@ -212,7 +212,7 @@ const NavBar = () => {
                 className="flex items-center gap-2 pl-2 py-2 text-red-600 hover:bg-gray-300 cursor-pointer"
                 onClick={handleLogout}
               >
-                <CiLogout className="text-lg" />
+                <CiLogout className="text-[27px]" />
                 Logout
               </li>
             ) : (

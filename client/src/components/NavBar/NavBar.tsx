@@ -6,8 +6,8 @@ import Cookies from "js-cookie";
 import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
 
 const NavBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // For mobile nav
+  const [isOpen, setIsOpen] = useState(false); // profile dropdown open/close
+  const [menuOpen, setMenuOpen] = useState(false); // mobile nav open/close
   const nav = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
@@ -34,98 +34,162 @@ const NavBar = () => {
   }, []);
 
   return (
-    <div className="bg-white drop-shadow-md relative">
-      {/* Topbar */}
-      <div className="flex justify-between items-center px-6 py-3">
+    <nav className="bg-white drop-shadow-md relative px-6 py-3">
+      {/* Container with logo, nav links, and profile all in one flex row */}
+      <div className="flex items-center justify-between">
         {/* Logo */}
-        <p className="text-xl font-bold cursor-pointer" onClick={() => nav("/home")}>
+        <p
+          className="text-xl font-bold cursor-pointer"
+          onClick={() => nav("/home")}
+        >
           File Manager
         </p>
 
-        {/* Hamburger icon for small screens */}
-        <div className="md:hidden">
-          {menuOpen ? (
-            <HiX className="text-2xl cursor-pointer" onClick={() => setMenuOpen(false)} />
-          ) : (
-            <HiOutlineMenuAlt3 className="text-2xl cursor-pointer" onClick={() => setMenuOpen(true)} />
-          )}
+        {/* Navigation links (hidden on mobile) */}
+        <div className="hidden md:flex md:items-center md:gap-6">
+          <Link
+            to="/home"
+            className={`px-3 py-1 rounded-md transition ${
+              location.pathname === "/home"
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/files"
+            className={`px-3 py-1 rounded-md transition ${
+              location.pathname === "/files"
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Files
+          </Link>
+          <Link
+            to="/folders"
+            className={`px-3 py-1 rounded-md transition ${
+              location.pathname === "/folders"
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Folders
+          </Link>
         </div>
 
-        {/* Right - Profile */}
-        <div className="hidden md:flex gap-5 items-center">
-          {loggedIn ? (
-            <img
-              src="/boy.png"
-              alt="profile"
-              onClick={() => setIsOpen(!isOpen)}
-              className="w-10 h-10 object-cover rounded-full cursor-pointer"
-            />
-          ) : (
-            <CgProfile
-              className="size-10 hover:bg-gray-200 p-1 rounded-full cursor-pointer"
-              onClick={() => setIsOpen(!isOpen)}
-            />
-          )}
-        </div>
-      </div>
+        {/* Right side: profile (desktop) & hamburger (mobile) */}
+        <div className="flex items-center gap-4">
+          {/* Profile icon for desktop */}
+          <div className="hidden md:flex items-center">
+            {loggedIn ? (
+              <img
+                src="/boy.png"
+                alt="profile"
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-10 h-10 object-cover rounded-full cursor-pointer"
+              />
+            ) : (
+              <CgProfile
+                className="text-2xl hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+                onClick={() => setIsOpen(!isOpen)}
+              />
+            )}
+          </div>
 
-      {/* Navigation links */}
-      <div className={`flex-col md:flex md:flex-row md:items-center md:justify-start md:px-10 gap-4 transition-all duration-200 ease-in-out ${menuOpen ? "flex px-6 pb-4" : "hidden md:flex"}`}>
-        <Link
-          to="/home"
-          className={`px-3 py-1 rounded-md transition ${
-            location.pathname === "/home"
-              ? "bg-blue-100 text-blue-800 font-semibold"
-              : "text-gray-700 hover:bg-gray-200"
-          }`}
-        >
-          Home
-        </Link>
-
-        <Link
-          to="/files"
-          className={`px-3 py-1 rounded-md transition ${
-            location.pathname === "/files"
-              ? "bg-blue-100 text-blue-800 font-semibold"
-              : "text-gray-700 hover:bg-gray-200"
-          }`}
-        >
-          Files
-        </Link>
-
-        <Link
-          to="/folders"
-          className={`px-3 py-1 rounded-md transition ${
-            location.pathname === "/folders"
-              ? "bg-blue-100 text-blue-800 font-semibold"
-              : "text-gray-700 hover:bg-gray-200"
-          }`}
-        >
-          Folders
-        </Link>
-
-        {/* Mobile profile icon */}
-        <div className="flex md:hidden mt-2">
-          {loggedIn ? (
-            <img
-              src="/boy.png"
-              alt="profile"
-              onClick={() => setIsOpen(!isOpen)}
-              className="w-10 h-10 object-cover rounded-full cursor-pointer"
-            />
-          ) : (
-            <CgProfile
-              className="size-10 hover:bg-gray-200 p-1 rounded-full cursor-pointer"
-              onClick={() => setIsOpen(!isOpen)}
-            />
-          )}
+          {/* Hamburger icon for mobile */}
+          <div className="md:hidden">
+            {menuOpen ? (
+              <HiX
+                className="text-2xl cursor-pointer"
+                onClick={() => setMenuOpen(false)}
+              />
+            ) : (
+              <HiOutlineMenuAlt3
+                className="text-2xl cursor-pointer"
+                onClick={() => setMenuOpen(true)}
+              />
+            )}
+          </div>
         </div>
       </div>
 
-      {/* dropdown menu */}
+      {/* Mobile menu dropdown (navigation links + profile icon) */}
+      {menuOpen && (
+        <div className="flex flex-col gap-3 mt-3 px-3 pb-4 md:hidden border-t border-gray-200">
+          <Link
+            to="/home"
+            className={`px-3 py-2 rounded-md transition ${
+              location.pathname === "/home"
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            onClick={() => setMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            to="/files"
+            className={`px-3 py-2 rounded-md transition ${
+              location.pathname === "/files"
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            onClick={() => setMenuOpen(false)}
+          >
+            Files
+          </Link>
+          <Link
+            to="/folders"
+            className={`px-3 py-2 rounded-md transition ${
+              location.pathname === "/folders"
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            onClick={() => setMenuOpen(false)}
+          >
+            Folders
+          </Link>
+
+          {/* Mobile profile section inside menu */}
+          <div className="flex items-center gap-3 mt-2 border-t pt-2">
+            {loggedIn ? (
+              <img
+                src="/boy.png"
+                alt="profile"
+                onClick={() => {
+                  setIsOpen(!isOpen);
+                  setMenuOpen(false);
+                }}
+                className="w-10 h-10 object-cover rounded-full cursor-pointer"
+              />
+            ) : (
+              <CgProfile
+                className="text-2xl hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+                onClick={() => {
+                  setIsOpen(!isOpen);
+                  setMenuOpen(false);
+                }}
+              />
+            )}
+            <button
+              className="text-red-600 hover:text-red-800 font-semibold"
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+            >
+              {loggedIn ? "Logout" : "Login"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Profile dropdown menu */}
       {isOpen && (
-        <div className="absolute right-6 top-[60px] bg-gray-100 mt-2 rounded shadow-lg z-10">
-          <ul className="bg-gray-100 min-w-[150px]">
+        <div className="absolute right-6 top-[60px] bg-gray-100 mt-2 rounded shadow-lg z-10 min-w-[150px]">
+          <ul className="bg-gray-100">
             <li className="pl-2 pr-20 py-2 cursor-default select-none text-gray-700">
               {email || "No email"}
             </li>
@@ -137,7 +201,7 @@ const NavBar = () => {
                 nav("/profile");
               }}
             >
-              <CgProfile className="size-8 p-1 rounded-full mr-2" />
+              <CgProfile className="text-xl p-1 rounded-full mr-2" />
               Profile
             </li>
 
@@ -146,22 +210,25 @@ const NavBar = () => {
                 className="flex items-center gap-2 pl-2 py-2 text-red-600 hover:bg-gray-300 cursor-pointer"
                 onClick={handleLogout}
               >
-                <CiLogout className="size-6" />
+                <CiLogout className="text-lg" />
                 Logout
               </li>
             ) : (
               <li
                 className="flex items-center gap-2 pl-2 py-2 text-green-600 hover:bg-gray-300 cursor-pointer"
-                onClick={handleLogout}
+                onClick={() => {
+                  setIsOpen(false);
+                  nav("/login");
+                }}
               >
-                <CiLogout className="size-6" />
+                <CiLogout className="text-lg" />
                 Login
               </li>
             )}
           </ul>
         </div>
       )}
-    </div>
+    </nav>
   );
 };
 

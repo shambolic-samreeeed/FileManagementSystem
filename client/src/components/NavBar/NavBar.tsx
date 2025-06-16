@@ -115,7 +115,7 @@ const NavBar = () => {
         </div>
       </div>
 
-      {/* Mobile menu dropdown (navigation links + profile icon) */}
+      {/* Mobile menu dropdown (navigation links + profile + logout) */}
       {menuOpen && (
         <div className="flex flex-col gap-3 mt-3 px-3 pb-4 md:hidden border-t border-gray-200">
           <Link
@@ -152,37 +152,39 @@ const NavBar = () => {
             Folders
           </Link>
 
-          {/* Mobile profile section inside menu */}
-          <div className="flex items-center gap-3 mt-2 border-t pt-2">
-            {loggedIn ? (
-              <img
-                src="/boy.png"
-                alt="profile"
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                  setMenuOpen(false);
-                }}
-                className="w-10 h-10 object-cover rounded-full cursor-pointer"
-              />
-            ) : (
-              <CgProfile
-                className="text-2xl hover:bg-gray-200 p-1 rounded-full cursor-pointer"
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                  setMenuOpen(false);
-                }}
-              />
-            )}
+          {/* Profile link (no profile picture) */}
+          <button
+            className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-left w-full font-medium"
+            onClick={() => {
+              nav("/profile");
+              setMenuOpen(false);
+            }}
+          >
+            Profile
+          </button>
+
+          {/* Logout/Login button */}
+          {loggedIn ? (
             <button
-              className="text-red-600 hover:text-red-800 font-semibold"
+              className="text-red-600 hover:bg-red-100 px-3 py-2 rounded-md text-left w-full font-semibold"
               onClick={() => {
                 handleLogout();
                 setMenuOpen(false);
               }}
             >
-              {loggedIn ? "Logout" : "Login"}
+              Logout
             </button>
-          </div>
+          ) : (
+            <button
+              className="text-green-600 hover:bg-green-100 px-3 py-2 rounded-md text-left w-full font-semibold"
+              onClick={() => {
+                nav("/login");
+                setMenuOpen(false);
+              }}
+            >
+              Login
+            </button>
+          )}
         </div>
       )}
 

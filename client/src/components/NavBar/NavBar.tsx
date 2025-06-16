@@ -6,18 +6,17 @@ import Cookies from "js-cookie";
 import { HiOutlineMenuAlt3, HiX } from "react-icons/hi";
 
 const NavBar = () => {
-  const [isOpen, setIsOpen] = useState(false); // profile dropdown open/close
-  const [menuOpen, setMenuOpen] = useState(false); // mobile nav open/close
+  const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); 
   const nav = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const location = useLocation();
   const [toggleLoginPopup, setToggleLoginPopup] = useState(false);
 
-  const handlePopup = () =>{
+  const handlePopup = () => {
     setToggleLoginPopup(!toggleLoginPopup);
-  }
-
+  };
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -173,7 +172,7 @@ const NavBar = () => {
             <button
               className="text-red-600 hover:bg-red-100 px-3 py-2 rounded-md text-left w-full font-semibold"
               onClick={() => {
-                setToggleLoginPopup(true)
+                setToggleLoginPopup(true);
               }}
             >
               Logout
@@ -207,7 +206,7 @@ const NavBar = () => {
                 nav("/profile");
               }}
             >
-              <CgProfile className="text-[30px] p-1 rounded-full mr-2"  />
+              <CgProfile className="text-[30px] p-1 rounded-full mr-2" />
               Profile
             </li>
 
@@ -215,7 +214,7 @@ const NavBar = () => {
               <li
                 className="flex items-center gap-2 pl-2 py-2 text-red-600 hover:bg-gray-300 cursor-pointer"
                 // onClick={handleLogout}
-                onClick={()=>handlePopup()}
+                onClick={() => handlePopup()}
               >
                 <CiLogout className="text-[27px]" />
                 Logout
@@ -236,42 +235,40 @@ const NavBar = () => {
         </div>
       )}
 
-      {
-        toggleLoginPopup && (
-          <div
-      style={{
-        position: "fixed",
-        top: "20%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        backgroundColor: "white",
-        border: "1px solid #ccc",
-        padding: "20px",
-        borderRadius: "8px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
-        zIndex: 1000,
-        width: "90%",
-        maxWidth: "300px",
-      }}
-    >
-      <p className="mb-4 text-center">Are you sure you want to logout?</p>
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={()=>setToggleLoginPopup(false)}
-          className="px-3 py-1 rounded border border-gray-400 hover:bg-gray-100"
+      {toggleLoginPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "white",
+            border: "1px solid #ccc",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+            zIndex: 1000,
+            width: "90%",
+            maxWidth: "300px",
+          }}
         >
-          Cancel
-        </button>
-        <button
-          onClick={handleLogout}
-          className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
-        >
-          Logout
-        </button>
-      </div>
-    </div>
-        )
-      }
+          <p className="mb-4 text-center">Are you sure you want to logout?</p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setToggleLoginPopup(false)}
+              className="px-3 py-1 rounded border border-gray-400 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

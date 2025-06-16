@@ -173,8 +173,7 @@ const NavBar = () => {
             <button
               className="text-red-600 hover:bg-red-100 px-3 py-2 rounded-md text-left w-full font-semibold"
               onClick={() => {
-                handleLogout();
-                setMenuOpen(false);
+                setToggleLoginPopup(true)
               }}
             >
               Logout
